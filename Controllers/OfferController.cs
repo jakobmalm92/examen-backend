@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OfferApi.Models;
 
-namespace Test1.Controllers
+namespace examensarbeteBackend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
