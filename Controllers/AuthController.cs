@@ -16,20 +16,26 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public IActionResult Register([FromBody] User user)
     {
-        // Kontrollera om e-post redan finns
-        if (_context.Users.Any(u => u.Email == user.Email))
+        try
         {
-            return BadRequest(new { error = "E-postadressen är redan registrerad." });
+            // Kontrollera om e-postadressen redan finns
+            if (_context.Users.Any(u => u.Email == user.Email))
+            {
+                return BadRequest(new { error = "E-postadressen är redan registrerad." });
+            }
+
+            // Hasha lösenordet och spara användaren
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+            return Ok(new { message = "Användare registrerad!" });
         }
-
-        // Hasha lösenordet
-        user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-
-        // Spara användaren i databasen
-        _context.Users.Add(user);
-        _context.SaveChanges();
-
-        return Ok(new { message = "Användare registrerad!" });
+        catch (Exception ex)
+        {
+            // Returnera JSON-svar vid fel
+            return StatusCode(500, new { error = "Ett oväntat fel inträffade.", details = ex.Message });
+        }
     }
 
     [HttpPost("login")]
