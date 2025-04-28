@@ -10,8 +10,8 @@ using examensarbeteBackend.Data;
 namespace examensarbeteBackend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250424095405_UpdateUserModel")]
-    partial class UpdateUserModel
+    [Migration("20250424110225_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
