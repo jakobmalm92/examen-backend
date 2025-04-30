@@ -18,7 +18,6 @@ public class AuthController : ControllerBase
     {
         try
         {
-            // Kontrollera om e-postadressen redan finns
             if (_context.Users.Any(u => u.Email == user.Email))
             {
                 return BadRequest(new { error = "E-postadressen är redan registrerad." });
@@ -33,7 +32,6 @@ public class AuthController : ControllerBase
         }
         catch (Exception ex)
         {
-            // Returnera JSON-svar vid fel
             return StatusCode(500, new { error = "Ett oväntat fel inträffade.", details = ex.Message });
         }
     }

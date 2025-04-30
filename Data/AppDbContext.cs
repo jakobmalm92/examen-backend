@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using examensarbeteBackend.Models;
+using OfferApi.Models;
 
 namespace examensarbeteBackend.Data
 {
@@ -8,5 +9,6 @@ namespace examensarbeteBackend.Data
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<OfferRequest> OfferRequests { get; set; }
     }
 }
