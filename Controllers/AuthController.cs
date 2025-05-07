@@ -1,5 +1,6 @@
 ﻿using examensarbeteBackend.Data;
 using examensarbeteBackend.Models;
+using examensarbeteBackend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
@@ -7,10 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 public class AuthController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly JwtTokenService _jwtTokenService;
 
-    public AuthController(AppDbContext context)
+    public AuthController(AppDbContext context, JwtTokenService jwtTokenService)
     {
         _context = context;
+        _jwtTokenService = jwtTokenService;
     }
 
     [HttpPost("register")]
@@ -39,13 +42,30 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginRequest request)
     {
-        var existingUser = _context.Users.FirstOrDefault(u => u.Email == request.Email);
-
-        if (existingUser == null || !BCrypt.Net.BCrypt.Verify(request.Password, existingUser.Password))
+        try
         {
-            return Unauthorized(new { error = "Felaktiga inloggningsuppgifter." });
-        }
+            var existingUser = _context.Users.FirstOrDefault(u => u.Email == request.Email);
 
-        return Ok(new { message = "Inloggning lyckades!" });
+            if (existingUser == null || !BCrypt.Net.BCrypt.Verify(request.Password, existingUser.Password))
+            {
+                return Unauthorized(new { error = "Felaktiga inloggningsuppgifter." });
+            }
+
+            // Generera JWT-token
+            var token = _jwtTokenService.GenerateToken(existingUser.Email, existingUser.Id);
+
+            // Lägg till token i headers
+            Response.Headers.Append("Authorization", $"Bearer {token}");
+
+            // Returnera token i body
+            return Ok(new { token });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = "Ett oväntat fel inträffade.", details = ex.Message });
+        }
     }
+
+
+
 }
