@@ -7,7 +7,7 @@ namespace examensarbeteBackend.Services
 {
     public class JwtTokenService
     {
-        private readonly string _secretKey;
+        private readonly string _secretKey; 
         private readonly string _issuer;
         private readonly string _audience;
 
